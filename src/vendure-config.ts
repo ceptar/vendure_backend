@@ -10,6 +10,8 @@ import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+
 import path from 'path';
 import fs from 'fs';
 
@@ -97,6 +99,14 @@ export const config: VendureConfig = {
             appDir: IS_DEV
                 ? path.join(__dirname, '../dist/dashboard')
                 : path.join(__dirname, 'dashboard'),
+        }),
+        AdminUiPlugin.init({
+            port: 3001,
+            route: 'admin',
+            adminUiConfig: {
+                apiHost: 'https://lobster-app-xnbip.ondigitalocean.app',
+                apiPort: 443,
+            },
         }),
     ],
 };
