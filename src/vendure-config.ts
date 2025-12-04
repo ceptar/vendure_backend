@@ -51,7 +51,7 @@ export const config: VendureConfig = {
         database: process.env.DB_NAME,
         schema: process.env.DB_SCHEMA,
         ssl: process.env.CERT_PATH
-            ? { ca: fs.readFileSync(process.env.CERT_PATH) }
+            ? { ca: (process.env.CERT_PATH) }
             : { ca: fs.readFileSync(LOCAL_CERT_PATH) },
         host: process.env.DB_HOST,
         port: +process.env.DB_PORT,
