@@ -7,17 +7,16 @@ import {
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+import { CmsPlugin } from './plugins/cms/cms.plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 
 import path from 'path';
 import fs from 'fs';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
-const serverPort = +process.env.PORT || 3000;
-const LOCAL_CERT_PATH = 'ca-certificate.crt'
+const serverPort = +process.env.PORT || 8000;
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -52,9 +51,9 @@ export const config: VendureConfig = {
         logging: false,
         database: process.env.DB_NAME,
         schema: process.env.DB_SCHEMA,
-        ssl: process.env.CERT_PATH
-            ? { ca: (process.env.CERT_PATH) }
-            : { ca: fs.readFileSync(LOCAL_CERT_PATH) },
+        ssl: process.env.DB_CA_CERT ? {
+            ca: process.env.DB_CA_CERT,
+        } : undefined,
         host: process.env.DB_HOST,
         port: +process.env.DB_PORT,
         username: process.env.DB_USERNAME,
@@ -100,13 +99,11 @@ export const config: VendureConfig = {
                 ? path.join(__dirname, '../dist/dashboard')
                 : path.join(__dirname, 'dashboard'),
         }),
-        AdminUiPlugin.init({
-            port: 3001,
-            route: 'admin',
-            adminUiConfig: {
-                apiHost: 'https://lobster-app-xnbip.ondigitalocean.app',
-                apiPort: 443,
-            },
+        CmsPlugin.init({
+            sanityApiKey: process.env.SANITY_API_KEY,
+            sanityProjectId: process.env.SANITY_PROJECT_ID,
+            sanityDataset: process.env.SANITY_DATASET || "production",
+            sanityOrigin: process.env.SANITY_ORIGIN,
         }),
     ],
 };
